@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Sharon-Liu-go/go-training-test/crawler"
@@ -9,11 +8,11 @@ import (
 )
 
 type Login struct {
-	Account  string `form:"user" json:"user" binding:"required"`
+	Account  string `form:"account" json:"account" binding:"required" `
 	Password string `form:"password" json:"password" binding:"required"`
 }
 
-type resFmt struct {
+type ResFmt struct {
 	Code int
 	Msg  string
 	Data interface{}
@@ -26,13 +25,20 @@ func main() {
 
 	router.POST("/login", func(c *gin.Context) {
 		var user Login
+
 		if err := c.ShouldBindJSON(&user); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			rtn := ResFmt{}
+			rtn.Code = 1
+			rtn.Msg = err.Error()
+			c.JSON(http.StatusBadRequest, rtn)
 			return
 		}
 
 		if user.Account != userStorage.Account || user.Password != userStorage.Password {
-			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
+			rtn := ResFmt{}
+			rtn.Code = 1
+			rtn.Msg = "unauthorized"
+			c.JSON(http.StatusUnauthorized, rtn)
 			return
 		}
 
@@ -41,15 +47,13 @@ func main() {
 
 	router.GET("/welcome", func(c *gin.Context) {
 		account := userStorage.Account
-		imgsSrc, count := crawler.CollyUseTemplate()
-		fmt.Println("imgsSrc:", imgsSrc)
-		fmt.Println("count:", count)
-		rtn := resFmt{}
+		imgSrc, count := crawler.CollyUseTemplate()
+		rtn := ResFmt{}
 		rtn.Code = 0
 		rtn.Msg = "success"
-		rtn.Data = gin.H{"account": account, "imgsSrc": imgsSrc}
+		rtn.Data = gin.H{"account": account, "imgsSrc": imgSrc, "count": count}
 		c.JSON(http.StatusOK, rtn)
 	})
 
-	router.Run(":3000")
+	router.Run(":3000") //放在router. API的前面，就會404
 }
