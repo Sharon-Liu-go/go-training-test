@@ -45,6 +45,8 @@ func main() {
 		c.Redirect(http.StatusFound, "/welcome")
 	})
 
+	router.LoadHTMLGlob("views/*.html")
+
 	router.GET("/welcome", func(c *gin.Context) {
 		account := userStorage.Account
 		imgSrc, count := crawler.CollyUseTemplate()
@@ -52,7 +54,8 @@ func main() {
 		rtn.Code = 0
 		rtn.Msg = "success"
 		rtn.Data = gin.H{"account": account, "imgsSrc": imgSrc, "count": count}
-		c.JSON(http.StatusOK, rtn)
+		c.HTML(http.StatusOK, "index.html", gin.H{"account": account, "imgsSrc": imgSrc, "count": count})
+		//c.JSON(http.StatusOK, rtn)
 	})
 
 	router.Run(":3000") //放在router. API的前面，就會404
