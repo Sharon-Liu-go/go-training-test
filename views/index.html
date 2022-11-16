@@ -11,6 +11,8 @@
 <body>
   <h1>歡迎{{.account}}！</h1>
   <h3>共{{.count}}張照片</h3>
+  <form action="/logout"><button type="submit">登出</button></form>
+
   {{ range .imgsSrc }}
   <img src={{ . }}>
   {{ end }}
