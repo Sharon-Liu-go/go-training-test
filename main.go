@@ -24,9 +24,12 @@ func main() {
 	userStorage := Login{"Sharon", "1111"}
 
 	router := gin.Default()
-	store := cookie.NewStore([]byte("secret00000"))
 
-	router.Use(sessions.Sessions("mySession", store))
+	//cookie-based
+	store := cookie.NewStore([]byte("secret00000"))   //建立store
+	router.Use(sessions.Sessions("mySession", store)) //設session名稱，該名稱會變成瀏覽器 cookie 的 key
+
+	//讀取html所在的位置
 	router.LoadHTMLGlob("views/*.html")
 
 	router.GET("/login", func(c *gin.Context) {
